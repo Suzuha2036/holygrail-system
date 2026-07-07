@@ -1,16 +1,18 @@
 #include <Arduino.h>
 
-// Built-in LED is usually GPIO2 on most ESP32 DevKit boards
-const int LED_PIN = 2;
+const int RELAY = 2;   // IN1 connected to GPIO2
 
 void setup() {
-    pinMode(LED_PIN, OUTPUT);
+    pinMode(RELAY, OUTPUT);
+
+    // Most 5V relay modules are active LOW
+    digitalWrite(RELAY, HIGH);   // Relay OFF initially
 }
 
 void loop() {
-    digitalWrite(LED_PIN, HIGH); // LED ON
-    delay(500);
-
-    digitalWrite(LED_PIN, LOW);  // LED OFF
+    digitalWrite(RELAY, LOW);    // Relay ON
     delay(2000);
+
+    digitalWrite(RELAY, HIGH);   // Relay OFF
+    delay(9000);
 }
