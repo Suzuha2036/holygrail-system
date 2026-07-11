@@ -1,18 +1,37 @@
 #include <Arduino.h>
+#include <DHT.h>
 
-const int RELAY = 2;   // IN1 connected to GPIO2
+#define DHTPIN 4
+#define DHTTYPE DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
 
 void setup() {
-    pinMode(RELAY, OUTPUT);
+    Serial.begin(115200);
+    delay(1000);
 
-    // Most 5V relay modules are active LOW
-    digitalWrite(RELAY, HIGH);   // Relay OFF initially
+    Serial.println();
+    Serial.println("=== DHT11 Test ===");
+
+    dht.begin();
 }
 
 void loop() {
-    digitalWrite(RELAY, LOW);    // Relay ON
-    delay(2000);
 
-    digitalWrite(RELAY, HIGH);   // Relay OFF
-    delay(9000);
+    float humidity = dht.readHumidity();
+    float temperature = dht.readTemperature();
+
+    if (isnan(humidity) || isnan(temperature)) {
+        Serial.println("Failed to read from DHT11!");
+    } else {
+        Serial.print("Temperature: ");
+        Serial.print(temperature);
+        Serial.print(" °C");
+
+        Serial.print("    Humidity: ");
+        Serial.print(humidity);
+        Serial.println(" %");
+    }
+
+    delay(2000);   // DHT11 updates about once per second; 2 seconds is safe
 }
