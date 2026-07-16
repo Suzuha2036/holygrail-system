@@ -45,7 +45,7 @@ extern bool maintenanceMode;
 
 extern String deviceStatus;
 extern String firmwareVersion;
-extern long uptime;
+extern unsigned long uptime;
 
 //
 // ===========================
@@ -68,5 +68,34 @@ extern int minimumWaterLevel;
 
 extern int wateringDuration;
 extern int fanDelay;
+
+//
+// ===========================
+// Cooling System
+// ===========================
+//
+
+extern bool coolingActive;
+extern bool coolingLockout;
+
+extern unsigned long coolingStartedAt;
+extern unsigned long coolingLockoutUntil;
+
+//
+// ===========================
+// Scheduler
+// ===========================
+//
+
+extern bool scheduleRunning;
+extern String currentSchedule;
+
+//
+// ===========================
+// Current Process
+// ===========================
+//
+
+extern String currentProcess;
 
 #endif

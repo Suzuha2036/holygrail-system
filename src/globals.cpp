@@ -43,7 +43,7 @@ bool maintenanceMode = false;
 String deviceStatus = "OFFLINE";
 String firmwareVersion = "1.0.0";
 
-long uptime = 0;
+unsigned long uptime = 0;
 
 //
 // ===========================
@@ -56,13 +56,44 @@ String sensorStatus = "NORMAL";
 //
 // ===========================
 // Thresholds
-// (Same defaults as Firebase)
+// (Default values)
 // ===========================
 //
 
 float maxTemperature = 32.0;
 float minHumidity = 60.0;
-int minimumWaterLevel = 20;
 
-int wateringDuration = 30;
+int minimumWaterLevel = 30;
+
+int wateringDuration = 60;
 int fanDelay = 10;
+
+//
+// ===========================
+// Cooling System
+// ===========================
+//
+
+bool coolingActive = false;
+bool coolingLockout = false;
+
+unsigned long coolingStartedAt = 0;
+unsigned long coolingLockoutUntil = 0;
+
+//
+// ===========================
+// Scheduler
+// ===========================
+//
+
+bool scheduleRunning = false;
+
+String currentSchedule = "";
+
+//
+// ===========================
+// Current Process
+// ===========================
+//
+
+String currentProcess = "IDLE";
