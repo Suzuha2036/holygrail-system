@@ -34,6 +34,9 @@ bool firebaseConnected = false;
 bool manualOverride = false;
 bool maintenanceMode = false;
 
+bool automationEnabled = true;
+String automationMode = "AUTO";
+
 //
 // ===========================
 // Device Status

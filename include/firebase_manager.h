@@ -38,6 +38,8 @@ void applyRemoteCommands();
 // Read automation settings
 void downloadAutomation();
 
+void downloadAutomationSettings();
+
 // Read threshold values
 void downloadThresholds();
 

@@ -102,8 +102,6 @@
 // Firebase Database Paths
 // =====================================================
 
-#define FB_ROOT                 "/HolyGrailPiggery"
-
 // Device
 #define FB_DEVICE               FB_ROOT "/devices/" DEVICE_ID
 

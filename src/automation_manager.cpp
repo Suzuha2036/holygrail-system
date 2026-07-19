@@ -33,7 +33,7 @@ void initAutomation()
 void runAutomation()
 {
     // ==========================================
-    // Manual Override
+    // Manual Override / Remote Control
     // ==========================================
 
     if (manualOverride)

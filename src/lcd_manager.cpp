@@ -94,18 +94,31 @@ void updateLCD()
     // ===========================
     // Page 3
     // ===========================
+
     case 2:
 
         lcd.setCursor(0,0);
+
         lcd.print("WiFi:");
 
         if(wifiConnected)
-            lcd.print("ONLINE");
+            lcd.print("ON");
         else
-            lcd.print("OFFLINE");
+            lcd.print("OFF");
+
+
+        lcd.print(" DB:");
+
+        if(firebaseConnected)
+            lcd.print("ON");
+        else
+            lcd.print("OFF");
+
 
         lcd.setCursor(0,1);
+
         lcd.print("ESP:");
+
         lcd.print(deviceStatus);
 
         break;

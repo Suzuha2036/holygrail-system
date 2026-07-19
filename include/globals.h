@@ -34,8 +34,12 @@ extern bool solenoid2State;
 extern bool wifiConnected;
 extern bool firebaseConnected;
 
+
 extern bool manualOverride;
 extern bool maintenanceMode;
+
+extern bool automationEnabled;
+extern String automationMode;
 
 //
 // ===========================
