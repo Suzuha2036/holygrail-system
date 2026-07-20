@@ -84,6 +84,7 @@
 #define FB_THRESHOLD_MINWATER    FIREBASE_ROOT "/thresholds/minimumWaterLevel"
 #define FB_THRESHOLD_FANDELAY    FIREBASE_ROOT "/thresholds/fanDelay"
 #define FB_THRESHOLD_WATERING    FIREBASE_ROOT "/thresholds/wateringDuration"
+#define FB_THRESHOLD_LOCKOUT     FIREBASE_ROOT "/thresholds/coolingLockoutDuration"
 
 // =====================================================
 // System

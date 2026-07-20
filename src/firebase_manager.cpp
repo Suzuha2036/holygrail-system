@@ -13,11 +13,9 @@
 using namespace firebase_ns;
 
 
-
 // =====================================================
 // Firebase Objects
 // =====================================================
-
 
 WiFiClientSecure sslClient;
 
@@ -36,7 +34,6 @@ UserAccount user(
 
 RealtimeDatabase Database;
 AsyncResult databaseResult;
-
 
 
 // =====================================================
@@ -63,6 +60,7 @@ bool cmdSolenoid2 = false;
 void downloadCommands();
 void applyRemoteCommands();
 
+
 // =====================================================
 // Initialize Firebase
 // =====================================================
@@ -84,7 +82,7 @@ void initFirebase()
     NTP_SERVER
     );
 
-Serial.println("Synchronizing time...");
+    Serial.println("Synchronizing time...");
 
 
     signup(
@@ -105,12 +103,6 @@ Serial.println("Synchronizing time...");
 
 };
 
-
-
-// =====================================================
-// Firebase Background Loop
-// =====================================================
-
 void firebaseLoop()
 {
 
@@ -120,30 +112,24 @@ void firebaseLoop()
 
 
 
+    static bool thresholdsInitialized = false;
+
     if(app.ready())
     {
-
-        firebaseReady = true;
-
         firebaseConnected = true;
 
+        if(!thresholdsInitialized)
+        {
+            initializeThresholds();
+            thresholdsInitialized = true;
+        }
     }
     else
     {
-
-        firebaseReady = false;
-
         firebaseConnected = false;
-
     }
 
 }
-
-
-
-// =====================================================
-// Firebase Synchronization
-// =====================================================
 
 void firebaseSync()
 {
@@ -166,6 +152,8 @@ void firebaseSync()
 
     downloadAutomationSettings();
 
+    downloadThresholds();
+
     if(manualOverride)
     {
         applyRemoteCommands();
@@ -175,6 +163,152 @@ void firebaseSync()
         Serial.println("[Mode] AUTO");
     }
 }
+
+void initializeThresholds()
+{
+    float temp;
+    int value;
+
+    // ==========================
+    // Maximum Temperature
+    // ==========================
+
+    temp = Database.get<float>(
+        aClient,
+        FB_THRESHOLD_MAXTEMP
+    );
+
+    if(temp >= 20 && temp <= 45)
+    {
+        maxTemperature = temp;
+    }
+    else
+    {
+        Database.set<float>(
+            aClient,
+            FB_THRESHOLD_MAXTEMP,
+            maxTemperature
+        );
+    }
+
+    // ==========================
+    // Minimum Humidity
+    // ==========================
+
+    temp = Database.get<float>(
+        aClient,
+        FB_THRESHOLD_MINHUM
+    );
+
+    if(temp >= 10 && temp <= 100)
+    {
+        minHumidity = temp;
+    }
+    else
+    {
+        Database.set<float>(
+            aClient,
+            FB_THRESHOLD_MINHUM,
+            minHumidity
+        );
+    }
+
+    // ==========================
+    // Minimum Water Level
+    // ==========================
+
+    value = Database.get<int>(
+        aClient,
+        FB_THRESHOLD_MINWATER
+    );
+
+    if(value >= 0 && value <= 100)
+    {
+        minimumWaterLevel = value;
+    }
+    else
+    {
+        Database.set<int>(
+            aClient,
+            FB_THRESHOLD_MINWATER,
+            minimumWaterLevel
+        );
+    }
+
+    // ==========================
+    // Fan Delay
+    // ==========================
+
+    value = Database.get<int>(
+        aClient,
+        FB_THRESHOLD_FANDELAY
+    );
+
+    if(value >= 0)
+    {
+        fanDelay = value;
+    }
+    else
+    {
+        Database.set<int>(
+            aClient,
+            FB_THRESHOLD_FANDELAY,
+            fanDelay
+        );
+    }
+
+    // ==========================
+    // Watering Duration
+    // ==========================
+
+    value = Database.get<int>(
+        aClient,
+        FB_THRESHOLD_WATERING
+    );
+
+    if(value >= 1)
+    {
+        wateringDuration = value;
+    }
+    else
+    {
+        Database.set<int>(
+            aClient,
+            FB_THRESHOLD_WATERING,
+            wateringDuration
+        );
+    }
+
+    // ==========================
+    // Cooling Lockout
+    // ==========================
+
+    value = Database.get<int>(
+        aClient,
+        FB_THRESHOLD_LOCKOUT
+    );
+
+    if(value >= 10)
+    {
+        coolingLockoutDuration = value;
+    }
+    else
+    {
+        Database.set<int>(
+            aClient,
+            FB_THRESHOLD_LOCKOUT,
+            coolingLockoutDuration
+        );
+    }
+
+    Serial.println("[Firebase] Thresholds initialized.");
+}
+
+
+// =====================================================
+// Upload Functions
+// =====================================================
+
 
 void uploadCurrentSensors()
 {
@@ -396,6 +530,11 @@ void uploadActuatorStatus()
     }
 }
 
+
+// =====================================================
+// Download Functions
+// =====================================================
+
 void downloadCommands()
 {
     cmdFan1 = Database.get<bool>(
@@ -481,7 +620,6 @@ void downloadAutomationSettings()
     Serial.println("==============================");
 
 }
-
 
 void applyRemoteCommands()
 {
@@ -617,6 +755,105 @@ void clearManualCommands()
     }
 }
 
+void downloadThresholds()
+{
+    // =====================================
+    // Float Values
+    // =====================================
+
+    float temp;
+
+    temp = Database.get<float>(
+        aClient,
+        FB_THRESHOLD_MAXTEMP
+    );
+
+    if(temp >= 20 && temp <= 45)
+        maxTemperature = temp;
+
+    temp = Database.get<float>(
+        aClient,
+        FB_THRESHOLD_MINHUM
+    );
+
+    if(temp >= 10 && temp <= 100)
+        minHumidity = temp;
+
+    // =====================================
+    // Integer Values
+    // =====================================
+
+    int value;
+
+    // Minimum Water Level
+    value = Database.get<int>(
+        aClient,
+        FB_THRESHOLD_MINWATER
+    );
+
+    if(value >= 0 && value <= 100)
+        minimumWaterLevel = value;
+
+    // Fan Delay
+    value = Database.get<int>(
+        aClient,
+        FB_THRESHOLD_FANDELAY
+    );
+
+    if(value >= 0)
+        fanDelay = value;
+
+    // Watering Duration
+    value = Database.get<int>(
+        aClient,
+        FB_THRESHOLD_WATERING
+    );
+
+    if(value >= 1)
+        wateringDuration = value;
+
+    // Cooling Lockout Duration
+    value = Database.get<int>(
+        aClient,
+        FB_THRESHOLD_LOCKOUT
+    );
+
+    if(value >= 10)
+        coolingLockoutDuration = value;
+
+    // =====================================
+    // Debug
+    // =====================================
+
+    Serial.println("[Firebase] Thresholds Updated");
+
+    Serial.println("===== Thresholds =====");
+
+    Serial.print("Max Temperature: ");
+    Serial.println(maxTemperature);
+
+    Serial.print("Min Humidity: ");
+    Serial.println(minHumidity);
+
+    Serial.print("Minimum Water Level: ");
+    Serial.println(minimumWaterLevel);
+
+    Serial.print("Fan Delay: ");
+    Serial.println(fanDelay);
+
+    Serial.print("Watering Duration: ");
+    Serial.println(wateringDuration);
+
+    Serial.print("Cooling Lockout: ");
+    Serial.print(coolingLockoutDuration);
+    Serial.println(" sec");
+
+    Serial.println("======================");
+}
+
+// =====================================================
+// Utility Functions
+// =====================================================
 
 String getCurrentTimestamp()
 {
@@ -638,10 +875,6 @@ String getCurrentTimestamp()
 
     return String(buffer);
 }
-
-// =====================================================
-// Firebase Status
-// =====================================================
 
 bool isFirebaseConnected()
 {

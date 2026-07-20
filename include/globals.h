@@ -84,6 +84,7 @@ extern int minimumWaterLevel;
 
 extern int wateringDuration;
 extern int fanDelay;
+extern int coolingLockoutDuration;
 
 //
 // ===========================

@@ -119,7 +119,7 @@ void runAutomation()
 
     if (coolingLockout)
     {
-        if (millis() - lockoutStartMillis >= 300000) // 5 minutes
+        if (millis() - lockoutStartMillis >= (unsigned long)coolingLockoutDuration * 1000)
         {
             coolingLockout = false;
             currentProcess = "IDLE";
@@ -177,7 +177,9 @@ void runAutomation()
 
             lockoutStartMillis = millis();
 
-            coolingLockoutUntil = lockoutStartMillis + 300000;
+            coolingLockoutUntil =
+                lockoutStartMillis +
+                ((unsigned long)coolingLockoutDuration * 1000);
 
             currentProcess = "LOCKOUT";
 

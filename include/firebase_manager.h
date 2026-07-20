@@ -13,6 +13,8 @@ void firebaseLoop();
 
 void firebaseSync();
 
+void initializeThresholds();
+
 // =====================================================
 // Upload Functions
 // =====================================================
@@ -23,25 +25,28 @@ void uploadCurrentSensors();
 // Upload ESP32 device information
 void uploadDeviceStatus();
 
-// Upload relay states
+// Upload actuator states
 void uploadActuatorStatus();
 
 // =====================================================
 // Download Functions
 // =====================================================
 
-// Read commands from Firebase
+// Download manual commands
 void downloadCommands();
 
-void applyRemoteCommands();
-
-// Read automation settings
-void downloadAutomation();
-
+// Download automation settings
 void downloadAutomationSettings();
 
-// Read threshold values
+// Download thresholds
 void downloadThresholds();
+
+// =====================================================
+// Manual Command Functions
+// =====================================================
+
+// Apply manual relay commands
+void applyRemoteCommands();
 
 // Clear all manual commands
 void clearManualCommands();
