@@ -1,0 +1,10 @@
+#ifndef EVENT_SOURCES_H
+#define EVENT_SOURCES_H
+
+#define SOURCE_SYSTEM      "SYSTEM"
+#define SOURCE_USER        "USER"
+#define SOURCE_AUTOMATION  "AUTOMATION"
+#define SOURCE_ESP32       "ESP32"
+#define SOURCE_FIREBASE    "FIREBASE"
+
+#endif

@@ -31,9 +31,6 @@
 #define FB_COMMAND_SOLENOID2     FIREBASE_ROOT "/commands/solenoid2"
 #define FB_COMMAND_UPDATED       FIREBASE_ROOT "/commands/updatedAt"
 
-// =====================================================
-// Actuators
-// =====================================================
 
 // =====================================================
 // Actuators
@@ -95,5 +92,27 @@
 #define FB_SYSTEM_RESTART        FIREBASE_ROOT "/system/lastRestart"
 #define FB_SYSTEM_MANUAL         FIREBASE_ROOT "/system/manualOverride"
 #define FB_SYSTEM_MAINTENANCE    FIREBASE_ROOT "/system/maintenanceMode"
+
+
+// =====================================================
+// Events
+// =====================================================
+
+#define FB_EVENTS FIREBASE_ROOT "/events"
+
+
+// =====================================================
+// Notifications
+// =====================================================
+
+#define FB_NOTIFICATIONS FIREBASE_ROOT "/notifications"
+
+
+// =====================================================
+// History
+// =====================================================
+
+#define FB_HISTORY FIREBASE_ROOT "/history"
+
 
 #endif

@@ -97,43 +97,4 @@
 #define WIFI_CHECK_INTERVAL   5000
 
 
-
-// =====================================================
-// Firebase Database Paths
-// =====================================================
-
-// Device
-#define FB_DEVICE               FB_ROOT "/devices/" DEVICE_ID
-
-// Sensors
-#define FB_SENSORS_CURRENT      FB_ROOT "/sensors/current"
-#define FB_SENSORS_HEALTH       FB_ROOT "/sensors/health"
-
-// Automation
-#define FB_AUTOMATION           FB_ROOT "/automation"
-
-// Commands
-#define FB_COMMANDS             FB_ROOT "/commands"
-
-// Actuators
-#define FB_ACTUATORS            FB_ROOT "/actuators"
-
-// Thresholds
-#define FB_THRESHOLDS           FB_ROOT "/thresholds"
-
-// System
-#define FB_SYSTEM               FB_ROOT "/system"
-
-// Notifications
-#define FB_NOTIFICATIONS        FB_ROOT "/notifications"
-
-// Events
-#define FB_EVENTS               FB_ROOT "/events"
-
-// History
-#define FB_HISTORY              FB_ROOT "/history"
-
-// Users
-#define FB_USERS                FB_ROOT "/users"
-
 #endif

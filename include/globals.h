@@ -94,6 +94,7 @@ extern int coolingLockoutDuration;
 
 extern bool coolingActive;
 extern bool coolingLockout;
+extern bool lowWaterEventSent;
 
 extern unsigned long coolingStartedAt;
 extern unsigned long coolingLockoutUntil;

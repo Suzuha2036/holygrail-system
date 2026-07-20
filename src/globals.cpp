@@ -91,6 +91,7 @@ int fanDelay = 10;
 
 bool coolingActive = false;
 bool coolingLockout = false;
+bool lowWaterEventSent = false;
 int coolingLockoutDuration = 300;
 
 unsigned long coolingStartedAt = 0;

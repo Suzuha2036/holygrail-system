@@ -63,13 +63,16 @@ void pushNotification(
     String title,
     String message,
     String type,
-    String severity
+    String severity,
+    String source
 );
 
-// Log system event
 void logEvent(
     String action,
-    String reason
+    String category,
+    String severity,
+    String reason,
+    String triggeredBy
 );
 
 // =====================================================

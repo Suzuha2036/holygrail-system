@@ -67,7 +67,6 @@ void applyRemoteCommands();
 
 void initFirebase()
 {
-
     Serial.println();
     Serial.println("==============================");
     Serial.println("Initializing Firebase...");
@@ -76,92 +75,192 @@ void initFirebase()
 
     sslClient.setInsecure();
 
+
     configTime(
-    GMT_OFFSET_SEC,
-    DAYLIGHT_OFFSET_SEC,
-    NTP_SERVER
+        GMT_OFFSET_SEC,
+        DAYLIGHT_OFFSET_SEC,
+        NTP_SERVER
     );
+
 
     Serial.println("Synchronizing time...");
 
 
     signup(
-    aClient,
-    app,
-    getAuth(user)
-);
+        aClient,
+        app,
+        getAuth(user)
+    );
+
 
     app.getApp<RealtimeDatabase>(Database);
+
 
     Database.url(FIREBASE_DATABASE_URL);
 
 
     firebaseConnected = false;
+    firebaseReady = false;
 
 
-    Serial.println("Firebase Initialized");
+    Serial.println("Firebase Authentication Started");
 
-};
+}
 
 void firebaseLoop()
 {
 
-    // Required by FirebaseClient
-
+    // Firebase background processing
     app.loop();
 
 
-
+    static bool startupLogged = false;
     static bool thresholdsInitialized = false;
+
 
     if(app.ready())
     {
+
+        if(!firebaseConnected)
+        {
+            Serial.println("[Firebase] Connected");
+        }
+
+
         firebaseConnected = true;
+        firebaseReady = true;
+
+
+
+        // ================================
+        // Startup Event
+        // ================================
+
+        if(!startupLogged)
+        {
+
+            logEvent(
+                "STARTUP",
+                "SYSTEM",
+                "INFO",
+                "System Boot",
+                "ESP32"
+            );
+
+
+            pushNotification(
+                "System Started",
+                "Holy Grail Piggery System is online.",
+                "SYSTEM",
+                "INFO",
+                "ESP32"
+            );
+
+
+            startupLogged = true;
+        }
+
+
+
+        // ================================
+        // Initialize Defaults
+        // ================================
 
         if(!thresholdsInitialized)
         {
+
             initializeThresholds();
+
             thresholdsInitialized = true;
         }
+
+
+
+        // ================================
+        // Sync Firebase
+        // ================================
+
+        firebaseSync();
+
     }
+
     else
     {
+
         firebaseConnected = false;
+        firebaseReady = false;
+
+
+        static unsigned long lastFirebaseWait = 0;
+
+
+        if(millis() - lastFirebaseWait > 5000)
+        {
+            Serial.println("[Firebase] Waiting for connection...");
+            lastFirebaseWait = millis();
+        }
+
     }
 
 }
 
 void firebaseSync()
 {
-    if (!wifiConnected || !firebaseReady)
-        return;
 
-    if (millis() - lastFirebaseUpload < FIREBASE_UPLOAD_INTERVAL)
+    if(!firebaseConnected)
+    {
         return;
+    }
+
+
+    if(!wifiConnected)
+    {
+        return;
+    }
+
+
+
+    if(millis() - lastFirebaseUpload < FIREBASE_UPLOAD_INTERVAL)
+    {
+        return;
+    }
+
 
     lastFirebaseUpload = millis();
 
 
+
+    Serial.println("[Firebase] Syncing...");
+
+
+
     uploadCurrentSensors();
+
 
     uploadDeviceStatus();
 
+
     uploadActuatorStatus();
+
+
 
     downloadCommands();
 
+
     downloadAutomationSettings();
+
 
     downloadThresholds();
 
+
+
     if(manualOverride)
     {
+
         applyRemoteCommands();
+
     }
-    else
-    {
-        Serial.println("[Mode] AUTO");
-    }
+
 }
 
 void initializeThresholds()
@@ -850,6 +949,180 @@ void downloadThresholds()
 
     Serial.println("======================");
 }
+
+
+// =====================================================
+// Log Event, Notification, History
+// =====================================================
+
+void logEvent(
+    String action,
+    String category,
+    String severity,
+    String reason,
+    String triggeredBy
+)
+{
+
+    String eventID = String(millis());
+
+
+    String basePath =
+        String(FB_EVENTS) + "/" + eventID;
+
+
+    bool success = true;
+
+
+    success &= Database.set<String>(
+        aClient,
+        basePath + "/action",
+        action
+    );
+
+
+    success &= Database.set<String>(
+        aClient,
+        basePath + "/category",
+        category
+    );
+
+
+    success &= Database.set<String>(
+        aClient,
+        basePath + "/severity",
+        severity
+    );
+
+
+    success &= Database.set<String>(
+        aClient,
+        basePath + "/reason",
+        reason
+    );
+
+
+    success &= Database.set<String>(
+        aClient,
+        basePath + "/device",
+        DEVICE_ID
+    );
+
+
+    success &= Database.set<String>(
+        aClient,
+        basePath + "/triggeredBy",
+        triggeredBy
+    );
+
+
+    success &= Database.set<String>(
+        aClient,
+        basePath + "/timestamp",
+        getCurrentTimestamp()
+    );
+
+
+    if(success)
+    {
+        Serial.println("[Firebase] Event logged.");
+
+        Serial.print("Event: ");
+        Serial.println(action);
+    }
+    else
+    {
+        Serial.print("[Firebase] Event failed: ");
+        Serial.println(
+            aClient.lastError().message()
+        );
+    }
+
+}
+
+void pushNotification(
+    String title,
+    String message,
+    String type,
+    String severity,
+    String source
+)
+{
+    String notificationID = String(millis());
+
+
+    String path =
+        String(FB_NOTIFICATIONS) + "/" + notificationID;
+
+
+    bool success = true;
+
+
+    success &= Database.set<String>(
+        aClient,
+        path + "/title",
+        title
+    );
+
+
+    success &= Database.set<String>(
+        aClient,
+        path + "/message",
+        message
+    );
+
+
+    success &= Database.set<String>(
+        aClient,
+        path + "/type",
+        type
+    );
+
+
+    success &= Database.set<String>(
+        aClient,
+        path + "/severity",
+        severity
+    );
+
+
+    success &= Database.set<String>(
+        aClient,
+        path + "/source",
+        source
+    );
+
+
+    success &= Database.set<bool>(
+        aClient,
+        path + "/read",
+        false
+    );
+
+
+    success &= Database.set<String>(
+        aClient,
+        path + "/timestamp",
+        getCurrentTimestamp()
+    );
+
+
+    if(success)
+    {
+        Serial.println("[Firebase] Notification created.");
+
+        Serial.print("Notification: ");
+        Serial.println(title);
+    }
+    else
+    {
+        Serial.print("[Firebase] Notification failed: ");
+        Serial.println(
+            aClient.lastError().message()
+        );
+    }
+}
+
 
 // =====================================================
 // Utility Functions

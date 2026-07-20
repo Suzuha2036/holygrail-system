@@ -20,6 +20,7 @@ void initAutomation()
 {
     coolingActive = false;
     coolingLockout = false;
+    
 
     coolingStartedAt = 0;
     coolingLockoutUntil = 0;
@@ -48,6 +49,15 @@ void runAutomation()
     {
         Serial.println("Switching to AUTO Mode");
 
+        logEvent(
+            "AUTO_ENABLED",
+            "SYSTEM",
+            "INFO",
+            "Automatic mode enabled",
+            "USER"
+        );
+
+
         allRelaysOff();
 
         fan1Reason = "Idle";
@@ -60,6 +70,19 @@ void runAutomation()
 
         currentProcess = "IDLE";
     }
+
+    lastManualOverride = manualOverride;
+    if(!lastManualOverride && manualOverride)
+    {
+        logEvent(
+            "MANUAL_ENABLED",
+            "MANUAL",
+            "INFO",
+            "Manual override enabled",
+            "USER"
+        );
+    }
+
 
     lastManualOverride = manualOverride;
 
@@ -145,6 +168,20 @@ void runAutomation()
         currentProcess = "COOLING";
 
         Serial.println("Cooling Started");
+        logEvent(
+            "COOLING_START",
+            "COOLING",
+            "INFO",
+            "Temperature exceeded threshold",
+            "AUTO"
+        );
+        pushNotification(
+            "Cooling Started",
+            "Automatic cooling cycle started",
+            "SYSTEM",
+            "INFO",
+            "ESP32"
+        );
 
         warningBeep();
 
@@ -184,6 +221,20 @@ void runAutomation()
             currentProcess = "LOCKOUT";
 
             Serial.println("Cooling Finished");
+            logEvent(
+                "COOLING_END",
+                "COOLING",
+                "INFO",
+                "Cooling cycle completed",
+                "AUTO"
+            );
+            pushNotification(
+                "Cooling Finished",
+                "Cooling cycle completed successfully",
+                "SYSTEM",
+                "INFO",
+                "ESP32"
+            );
         }
     }
 
@@ -198,5 +249,30 @@ void runAutomation()
 
         solenoid1Off();
         solenoid1Reason = "Low Water Protection";
+
+
+        if(!lowWaterEventSent)
+        {
+            logEvent(
+                "LOW_WATER",
+                "SAFETY",
+                "WARNING",
+                "Water level below minimum protection threshold",
+                "AUTO"
+            );
+            pushNotification(
+                "Low Water Warning",
+                "Water level below minimum protection threshold",
+                "SAFETY",
+                "WARNING",
+                "ESP32"
+            );
+
+            lowWaterEventSent = true;
+        }
+    }
+    else
+    {
+        lowWaterEventSent = false;
     }
 }
