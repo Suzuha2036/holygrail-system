@@ -35,11 +35,24 @@
 // Actuators
 // =====================================================
 
-#define FB_ACTUATOR_FAN1         FIREBASE_ROOT "/actuators/fan1/state"
-#define FB_ACTUATOR_FAN2         FIREBASE_ROOT "/actuators/fan2/state"
-#define FB_ACTUATOR_PUMP         FIREBASE_ROOT "/actuators/pump/state"
-#define FB_ACTUATOR_SOLENOID1    FIREBASE_ROOT "/actuators/solenoid1/state"
-#define FB_ACTUATOR_SOLENOID2    FIREBASE_ROOT "/actuators/solenoid2/state"
+// =====================================================
+// Actuators
+// =====================================================
+
+#define FB_ACTUATOR_FAN1_STATE   FIREBASE_ROOT "/actuators/fan1/state"
+#define FB_ACTUATOR_FAN1_REASON  FIREBASE_ROOT "/actuators/fan1/reason"
+
+#define FB_ACTUATOR_FAN2_STATE   FIREBASE_ROOT "/actuators/fan2/state"
+#define FB_ACTUATOR_FAN2_REASON  FIREBASE_ROOT "/actuators/fan2/reason"
+
+#define FB_ACTUATOR_PUMP_STATE   FIREBASE_ROOT "/actuators/pump/state"
+#define FB_ACTUATOR_PUMP_REASON  FIREBASE_ROOT "/actuators/pump/reason"
+
+#define FB_ACTUATOR_SOL1_STATE   FIREBASE_ROOT "/actuators/solenoid1/state"
+#define FB_ACTUATOR_SOL1_REASON  FIREBASE_ROOT "/actuators/solenoid1/reason"
+
+#define FB_ACTUATOR_SOL2_STATE   FIREBASE_ROOT "/actuators/solenoid2/state"
+#define FB_ACTUATOR_SOL2_REASON  FIREBASE_ROOT "/actuators/solenoid2/reason"
 
 // =====================================================
 // Device

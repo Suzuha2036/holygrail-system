@@ -10,6 +10,7 @@
 
 // Used only inside this file
 unsigned long lockoutStartMillis = 0;
+static bool lastManualOverride = false;
 
 // ==========================================
 // Initialize Automation
@@ -24,6 +25,12 @@ void initAutomation()
     coolingLockoutUntil = 0;
 
     currentProcess = "IDLE";
+
+    fan1Reason = "Idle";
+    fan2Reason = "Idle";
+    pumpReason = "Idle";
+    solenoid1Reason = "Idle";
+    solenoid2Reason = "Idle";
 }
 
 // ==========================================
@@ -32,6 +39,31 @@ void initAutomation()
 
 void runAutomation()
 {
+
+    // ==========================================
+    // Detect MANUAL -> AUTO transition
+    // ==========================================
+
+    if (lastManualOverride && !manualOverride)
+    {
+        Serial.println("Switching to AUTO Mode");
+
+        allRelaysOff();
+
+        fan1Reason = "Idle";
+        fan2Reason = "Idle";
+        pumpReason = "Idle";
+        solenoid1Reason = "Idle";
+        solenoid2Reason = "Idle";
+
+        clearManualCommands();
+
+        currentProcess = "IDLE";
+    }
+
+    lastManualOverride = manualOverride;
+
+    
     // ==========================================
     // Manual Override / Remote Control
     // ==========================================
@@ -51,6 +83,11 @@ void runAutomation()
         currentProcess = "MAINTENANCE";
 
         allRelaysOff();
+        fan1Reason = "Maintenance Mode";
+        fan2Reason = "Maintenance Mode";
+        pumpReason = "Maintenance Mode";
+        solenoid1Reason = "Maintenance Mode";
+        solenoid2Reason = "Maintenance Mode";
 
         return;
     }
@@ -63,11 +100,17 @@ void runAutomation()
     {
         fan1On();
         fan2On();
+
+        fan1Reason = "AUTO - High Temperature";
+        fan2Reason = "AUTO - High Temperature";
     }
     else
     {
         fan1Off();
         fan2Off();
+
+        fan1Reason = "Idle";
+        fan2Reason = "Idle";
     }
 
     // ==========================================
@@ -106,10 +149,12 @@ void runAutomation()
         warningBeep();
 
         pumpOn();
+        pumpReason = "Cooling Cycle";
 
         delay(2000);
 
         solenoid1On();
+        solenoid1Reason = "Cooling Cycle";
     }
 
     // ==========================================
@@ -121,8 +166,10 @@ void runAutomation()
         if (millis() - coolingStartedAt >= (unsigned long)wateringDuration * 1000)
         {
             solenoid1Off();
+            solenoid1Reason = "Idle";
 
             pumpOff();
+            pumpReason = "Idle";
 
             coolingActive = false;
 
@@ -145,6 +192,9 @@ void runAutomation()
     if (waterLevel <= minimumWaterLevel)
     {
         pumpOff();
+        pumpReason = "Low Water Protection";
+
         solenoid1Off();
+        solenoid1Reason = "Low Water Protection";
     }
 }

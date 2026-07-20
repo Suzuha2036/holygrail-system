@@ -2,6 +2,9 @@
 #define AUTOMATION_MANAGER_H
 
 #include <Arduino.h>
+#include "firebase_manager.h"
+
+
 
 // Initialize automation variables
 void initAutomation();

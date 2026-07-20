@@ -27,6 +27,18 @@ extern bool solenoid2State;
 
 //
 // ===========================
+// Actuator Status
+// ===========================
+//
+
+extern String fan1Reason;
+extern String fan2Reason;
+extern String pumpReason;
+extern String solenoid1Reason;
+extern String solenoid2Reason;
+
+//
+// ===========================
 // System Status
 // ===========================
 //

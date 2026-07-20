@@ -24,6 +24,18 @@ bool solenoid2State = false;
 
 //
 // ===========================
+// Actuator Status
+// ===========================
+//
+
+String fan1Reason = "Idle";
+String fan2Reason = "Idle";
+String pumpReason = "Idle";
+String solenoid1Reason = "Idle";
+String solenoid2Reason = "Idle";
+
+//
+// ===========================
 // System Status
 // ===========================
 //

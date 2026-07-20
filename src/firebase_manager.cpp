@@ -160,10 +160,20 @@ void firebaseSync()
 
     uploadDeviceStatus();
 
+    uploadActuatorStatus();
+
     downloadCommands();
+
     downloadAutomationSettings();
 
-    applyRemoteCommands();
+    if(manualOverride)
+    {
+        applyRemoteCommands();
+    }
+    else
+    {
+        Serial.println("[Mode] AUTO");
+    }
 }
 
 void uploadCurrentSensors()
@@ -291,6 +301,101 @@ void uploadDeviceStatus()
     }
 }
 
+void uploadActuatorStatus()
+{
+    bool success = true;
+
+    // =====================================
+    // Fan 1
+    // =====================================
+
+    success &= Database.set<bool>(
+        aClient,
+        FB_ACTUATOR_FAN1_STATE,
+        fan1State
+    );
+
+    success &= Database.set<String>(
+        aClient,
+        FB_ACTUATOR_FAN1_REASON,
+        fan1Reason
+    );
+
+    // =====================================
+    // Fan 2
+    // =====================================
+
+    success &= Database.set<bool>(
+        aClient,
+        FB_ACTUATOR_FAN2_STATE,
+        fan2State
+    );
+
+    success &= Database.set<String>(
+        aClient,
+        FB_ACTUATOR_FAN2_REASON,
+        fan2Reason
+    );
+
+    // =====================================
+    // Pump
+    // =====================================
+
+    success &= Database.set<bool>(
+        aClient,
+        FB_ACTUATOR_PUMP_STATE,
+        pumpState
+    );
+
+    success &= Database.set<String>(
+        aClient,
+        FB_ACTUATOR_PUMP_REASON,
+        pumpReason
+    );
+
+    // =====================================
+    // Solenoid 1
+    // =====================================
+
+    success &= Database.set<bool>(
+        aClient,
+        FB_ACTUATOR_SOL1_STATE,
+        solenoid1State
+    );
+
+    success &= Database.set<String>(
+        aClient,
+        FB_ACTUATOR_SOL1_REASON,
+        solenoid1Reason
+    );
+
+    // =====================================
+    // Solenoid 2
+    // =====================================
+
+    success &= Database.set<bool>(
+        aClient,
+        FB_ACTUATOR_SOL2_STATE,
+        solenoid2State
+    );
+
+    success &= Database.set<String>(
+        aClient,
+        FB_ACTUATOR_SOL2_REASON,
+        solenoid2Reason
+    );
+
+    if(success)
+    {
+        Serial.println("[Firebase] Actuator status uploaded.");
+    }
+    else
+    {
+        Serial.print("[Firebase] Actuator upload failed: ");
+        Serial.println(aClient.lastError().message());
+    }
+}
+
 void downloadCommands()
 {
     cmdFan1 = Database.get<bool>(
@@ -380,68 +485,74 @@ void downloadAutomationSettings()
 
 void applyRemoteCommands()
 {
-
-    Serial.println("Applying Commands");
-
-
-    // ==========================
+    // =====================================
     // Fan 1
-    // ==========================
+    // =====================================
 
     if(cmdFan1)
+    {
         fan1On();
+        fan1Reason = "MANUAL - App Command";
+    }
     else
+    {
         fan1Off();
+        fan1Reason = "Idle";
+    }
 
-
-
-    // ==========================
+    // =====================================
     // Fan 2
-    // ==========================
+    // =====================================
 
     if(cmdFan2)
+    {
         fan2On();
+        fan2Reason = "MANUAL - App Command";
+    }
     else
+    {
         fan2Off();
+        fan2Reason = "Idle";
+    }
 
-
-
-    // ==========================
-    // Solenoid 1
+    // =====================================
     // Sprinkler
-    // ==========================
+    // Pump always follows Solenoid 1
+    // =====================================
 
     if(cmdSolenoid1)
     {
         pumpOn();
-        delay(2000);
         solenoid1On();
+
+        pumpReason = "MANUAL - Sprinkler";
+        solenoid1Reason = "MANUAL - Sprinkler";
     }
     else
     {
         solenoid1Off();
         pumpOff();
+
+        solenoid1Reason = "Idle";
+        pumpReason = "Idle";
     }
 
-
-
-    // ==========================
-    // Solenoid 2
+    // =====================================
     // Sanitation Valve
-    // ==========================
+    // =====================================
 
     if(cmdSolenoid2)
     {
-        pumpOn();
-        delay(2000);
         solenoid2On();
+        solenoid2Reason = "MANUAL - Sanitation";
     }
     else
     {
         solenoid2Off();
+        solenoid2Reason = "Idle";
     }
 
-
+    Serial.println("Applying Commands");
 
     Serial.println("Relay States:");
 
@@ -459,7 +570,51 @@ void applyRemoteCommands()
 
     Serial.print("Solenoid2: ");
     Serial.println(solenoid2State);
+}
 
+void clearManualCommands()
+{
+    bool success = true;
+
+    success &= Database.set<bool>(
+        aClient,
+        FB_COMMAND_FAN1,
+        false
+    );
+
+    success &= Database.set<bool>(
+        aClient,
+        FB_COMMAND_FAN2,
+        false
+    );
+
+    success &= Database.set<bool>(
+        aClient,
+        FB_COMMAND_SOLENOID1,
+        false
+    );
+
+    success &= Database.set<bool>(
+        aClient,
+        FB_COMMAND_SOLENOID2,
+        false
+    );
+
+    // Clear local command variables
+    cmdFan1 = false;
+    cmdFan2 = false;
+    cmdSolenoid1 = false;
+    cmdSolenoid2 = false;
+
+    if(success)
+    {
+        Serial.println("[Firebase] Manual commands cleared.");
+    }
+    else
+    {
+        Serial.print("[Firebase] Failed to clear commands: ");
+        Serial.println(aClient.lastError().message());
+    }
 }
 
 

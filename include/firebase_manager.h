@@ -24,7 +24,7 @@ void uploadCurrentSensors();
 void uploadDeviceStatus();
 
 // Upload relay states
-void uploadActuatorStates();
+void uploadActuatorStatus();
 
 // =====================================================
 // Download Functions
@@ -42,6 +42,9 @@ void downloadAutomationSettings();
 
 // Read threshold values
 void downloadThresholds();
+
+// Clear all manual commands
+void clearManualCommands();
 
 // =====================================================
 // Logging Functions
