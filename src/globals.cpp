@@ -48,7 +48,6 @@ bool maintenanceMode = false;
 
 bool automationEnabled = true;
 String automationMode = "AUTO";
-
 //
 // ===========================
 // Device Status

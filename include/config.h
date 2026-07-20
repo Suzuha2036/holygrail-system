@@ -97,4 +97,10 @@
 #define WIFI_CHECK_INTERVAL   5000
 
 
+// =====================================================
+// Device Monitoring
+// =====================================================
+
+#define DEVICE_TIMEOUT_SECONDS 30
+
 #endif

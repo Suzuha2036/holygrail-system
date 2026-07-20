@@ -28,6 +28,11 @@ void uploadDeviceStatus();
 // Upload actuator states
 void uploadActuatorStatus();
 
+// upload device
+void uploadDeviceHealth();
+
+void checkDeviceConnection();
+
 // =====================================================
 // Download Functions
 // =====================================================
@@ -77,7 +82,8 @@ void logEvent(
 
 // =====================================================
 // Utilities
-// =====================================================
+// =====================================================\
+
 
 // Current timestamp
 String getCurrentTimestamp();

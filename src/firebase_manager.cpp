@@ -252,6 +252,8 @@ void firebaseSync()
 
     downloadThresholds();
 
+    uploadDeviceHealth();
+
 
 
     if(manualOverride)
@@ -629,6 +631,52 @@ void uploadActuatorStatus()
     }
 }
 
+void uploadDeviceHealth()
+{
+
+    bool success = true;
+
+
+    // ESP32 uptime in seconds
+    unsigned long uptime =
+        millis() / 1000;
+
+
+    success &= Database.set<unsigned long>(
+        aClient,
+        FB_DEVICE_UPTIME,
+        uptime
+    );
+
+
+    // Available RAM
+    success &= Database.set<int>(
+        aClient,
+        FB_DEVICE_HEAP,
+        ESP.getFreeHeap()
+    );
+
+
+    // Firebase connection status
+    success &= Database.set<String>(
+        aClient,
+        FB_DEVICE_FIREBASE,
+        firebaseConnected ? "CONNECTED" : "OFFLINE"
+    );
+
+
+
+    if(success)
+    {
+        Serial.println("[Firebase] Device health uploaded.");
+    }
+    else
+    {
+        Serial.print("[Firebase] Health upload failed: ");
+        Serial.println(aClient.lastError().message());
+    }
+
+}
 
 // =====================================================
 // Download Functions

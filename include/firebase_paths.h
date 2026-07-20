@@ -93,6 +93,20 @@
 #define FB_SYSTEM_MANUAL         FIREBASE_ROOT "/system/manualOverride"
 #define FB_SYSTEM_MAINTENANCE    FIREBASE_ROOT "/system/maintenanceMode"
 
+#define FB_DEVICE_UPTIME \
+FIREBASE_ROOT "/devices/" DEVICE_ID "/health/uptime"
+
+
+#define FB_DEVICE_HEAP \
+FIREBASE_ROOT "/devices/" DEVICE_ID "/health/freeHeap"
+
+
+#define FB_DEVICE_FIREBASE \
+FIREBASE_ROOT "/devices/" DEVICE_ID "/health/firebase"
+
+#define FB_DEVICE_LASTSTATUS \
+FIREBASE_ROOT "/devices/" DEVICE_ID "/lastStatusCheck"
+
 
 // =====================================================
 // Events
